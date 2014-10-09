@@ -1,0 +1,30 @@
+<div class="row">
+  <form role="form form-horizontal">
+    <div class="form-group">
+      <textarea class="form-control" rows="10" ng-model="main.bedText" />
+    </div>
+    <div class="form-group">
+      <button class="btn btn-primary" ng-click="main.process()">View</button>
+    </div>
+  </form>
+</div>
+
+<div class="row well" ng-show="main.bedArray.length">
+  <svg id="chart" width="100%" ng-attr-height="{{main.svgHeight}}px">
+    <g ng-repeat="track in main.bedArray" ng-attr-transform="translate({{main.margin.left}},{{main.margin.top+track.offset}})">
+      <g primer-track start="track.start" sequence-length="track.length" width="main.trackWidth">
+        <g primer-scale orient="top" />
+        <g primer-label anchor="start" orient="top" transform="translate(-10)">
+          <text text-anchor="end" alignment-baseline="middle">{{track.key}}</text>
+        </g>
+        <g ng-attr-transform="translate(0,{{10*$index+5}})" ng-repeat="feature in track.values">
+          <g primer-label="{{feature.name}}" anchor="start" transform="translate(-10)" />
+          <g primer-feature start="feature.start" end="feature.end">
+            <g primer-feature-shape="{{feature.shape}}" class="marker" height="8" fill="rgb({{feature.rgb}})"/>
+          </g>
+        </g>
+      </g>
+    </g>
+  </svg>
+  <button class="btn btn-primary pull-right" svg-download="#chart" title="mysvg">Download SVG</button>
+</div>
