@@ -22,7 +22,7 @@
             <g primer-label anchor="start" orient="middle" >
               <text text-anchor="end" transform="translate(-3)">{{feature.name}}</text>
             </g>
-            <g primer-scale ticks="0" />
+            <g primer-scale ticks="0"></g>
             <g primer-feature-shape="{{feature.shape}}" class="marker" height="8" fill="rgb({{feature.itemRgb}})" ng-if="!feature.blocks.length"></g>
           </g>
           <g primer-feature start="block.start" end="block.end" ng-repeat="block in feature.blocks track by $index">
