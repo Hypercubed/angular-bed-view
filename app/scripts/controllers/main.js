@@ -14,7 +14,7 @@ angular.module('angularBedViewApp')
   .controller('MainCtrl', function ($scope, dsv) {
     var vm = this;
 
-    var header = 'chrom\tstart\tend\tname\tscore\tstrand\tfeatureStart\tfeatureEnd\trgb\n';
+    var header = 'chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tblockCount\tblockSizes\tblockStarts\n';
 
     vm.bedText =  'chr7\t127471196\t127472363\tPos1\t0\t+\t127471196\t127472363\t255,0,0\n'+
                   'chr7\t127472363\t127473530\tPos2\t0\t+\t127472363\t127473530\t255,0,0\n'+
@@ -26,16 +26,30 @@ angular.module('angularBedViewApp')
                   'chr7\t127479365\t127480532\tPos5\t0\t+\t127479365\t127480532\t255,0,0\n'+
                   'chr7\t127480532\t127481699\tNeg4\t0\t-\t127480532\t127481699\t0,0,255\n';
 
+    //vm.bedText = 'chr22\t1000\t5000\tcloneA\t960\t+\t1000\t5000\t0\t2\t567,488,\t0,3512\nchr22\t2000\t6000\tcloneB\t900\t-\t2000\t6000\t0\t2\t433,399,\t0,3601';
+
     vm.process = function() {
       var text = vm.bedText;
       text = text.replace(/ +/g, '\t');
       //console.log(text);
 
       vm.bedArray = dsv.tsv.parse(header+text, function(d) {
-        d.start = +d.start;
-        d.end = +d.end;
-        d.rgb = d.rgb || '0,0,0';
+        d.chromStart = +d.chromStart;
+        d.chromEnd = +d.chromEnd;
+        d.itemRgb = d.itemRgb || '0,0,0';
         d.shape = 'box';
+        if (d.blockCount && d.blockCount > 0) {
+          d.blockSizes = d.blockSizes.split(',');
+          d.blockStarts = d.blockStarts.split(',');
+          d.blocks = (new Array(45)).map(function(start,i) {
+            var s = d.chromStart + parseInt(d.blockStarts[i]);
+            if (!s) { return null; }
+            return {
+              start: s,
+              end: s + parseInt(d.blockSizes[i])
+            };
+          });
+        }
         d.labelWidth = getStringLength(d.name);
         if (d.strand) {
           d.shape += (d.strand === '+') ? '-right' : '-left';
@@ -44,14 +58,17 @@ angular.module('angularBedViewApp')
       });
 
       var _labelWidth = _F('labelWidth');
+      var _start = _F('chromStart');
+      var _end = _F('chromEnd');
+      var _chrom = _F('chrom');
 
       vm.bedArray = d3.nest()
-        .key(function(d) { return d.chrom; })
+        .key(_chrom)
         .entries(vm.bedArray);
 
       vm.bedArray.forEach(function(d, i) {
-        d.start = d3.min(d.values, _F('start'));
-        d.length = d3.max(d.values, _F('end'))-d.start;
+        d.start = d3.min(d.values, _start);
+        d.length = d3.max(d.values, _end)-d.start;
         d.height = 40+10*d.values.length;
         d.labelWidth = d3.max(d.values, _labelWidth);
         d.labelWidth = Math.max(d.labelWidth, getStringLength(d.key || ''));
@@ -59,7 +76,7 @@ angular.module('angularBedViewApp')
       });
 
       function getStringLength(s) {
-        if(!s || s.length === 0) return 0;
+        if(!s || s.length === 0) {return 0;}
         var svg = d3.select('body').append('svg');
         var temp = svg.append('text');
         temp.text(s);

@@ -18,9 +18,15 @@
           <text text-anchor="end" alignment-baseline="middle">{{track.key}}</text>
         </g>
         <g ng-attr-transform="translate(0,{{10*$index+5}})" ng-repeat="feature in track.values">
-          <g primer-label="{{feature.name}}" anchor="start" transform="translate(-10)" ></g>
-          <g primer-feature start="feature.start" end="feature.end">
-            <g primer-feature-shape="{{feature.shape}}" class="marker" height="8" fill="rgb({{feature.rgb}})"></g>
+          <g primer-feature start="feature.chromStart" end="feature.chromEnd">
+            <g primer-label anchor="start" orient="middle" >
+              <text text-anchor="end" transform="translate(-3)">{{feature.name}}</text>
+            </g>
+            <g primer-scale ticks="0" />
+            <g primer-feature-shape="{{feature.shape}}" class="marker" height="8" fill="rgb({{feature.itemRgb}})" ng-if="!feature.blocks.length"></g>
+          </g>
+          <g primer-feature start="block.start" end="block.end" ng-repeat="block in feature.blocks">
+            <g primer-feature-shape="{{feature.shape}}" class="marker" height="8" fill="rgb({{feature.itemRgb}})"></g>
           </g>
         </g>
       </g>
