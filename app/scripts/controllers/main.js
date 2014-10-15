@@ -38,18 +38,26 @@ angular.module('angularBedViewApp')
         d.chromEnd = +d.chromEnd;
         d.itemRgb = d.itemRgb || '0,0,0';
         d.shape = 'box';
+        d.blocks = [];
+
         if (d.blockCount && d.blockCount > 0) {
           d.blockSizes = d.blockSizes.split(',');
           d.blockStarts = d.blockStarts.split(',');
-          d.blocks = (new Array(45)).map(function(start,i) {
-            var s = d.chromStart + parseInt(d.blockStarts[i]);
-            if (!s) { return null; }
-            return {
-              start: s,
-              end: s + parseInt(d.blockSizes[i])
-            };
-          });
+          d.blockCount = parseInt(d.blockCount);
+
+          for(var i = 0; i < d.blockCount; i++) {
+            var start = d.blockStarts[i];
+            if (start) {
+              start = d.chromStart + parseInt(start);
+              d.blocks.push({
+                start: start,
+                end: start + parseInt(d.blockSizes[i])
+              });
+            }
+          }
+
         }
+
         d.labelWidth = getStringLength(d.name);
         if (d.strand) {
           d.shape += (d.strand === '+') ? '-right' : '-left';
