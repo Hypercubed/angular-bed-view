@@ -13,6 +13,10 @@ cd angular-bed-view
 grunt serve
 ```
 
+## Acknowledgments
+This work was supported by a research grant from the Japanese Ministry of Education, Culture, Sports, Science and Technology (MEXT) to the RIKEN Center for Life Science Technologies.
+
 ## License
 Copyright (c) 2014 Jayson Harshbarger
-MIT
+
+[MIT License](http://en.wikipedia.org/wiki/MIT_License)
