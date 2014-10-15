@@ -412,4 +412,10 @@ module.exports = function (grunt) {
     'test',
     'build'
   ]);
+
+  grunt.registerTask('publish', [
+    'build',
+    'gh-pages'
+  ]);
+  
 };
