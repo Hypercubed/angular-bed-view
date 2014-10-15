@@ -9,7 +9,7 @@ Simple example of a bed file viewer built using [Hypercubed/angular-primer](http
  
 ```bash
 git clone https://github.com/Hypercubed/angular-bed-view.git
-angular-bed-view
+cd angular-bed-view
 grunt serve
 ```
 
