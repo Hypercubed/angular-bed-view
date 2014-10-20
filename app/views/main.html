@@ -1,7 +1,16 @@
 <div class="row">
   <form role="form form-horizontal">
     <div class="form-group">
-      <textarea class="form-control" rows="10" ng-model="main.bedText"></textarea>
+      Insert text for <a ng-click="main.filename = 'examples/bed6.bed'; main.load(main.filename)">BED6</a>, <a ng-click="main.filename = 'examples/bed9.bed'; main.load(main.filename)">BED9</a>, or <a ng-click="main.filename = 'examples/bed12.bed'; main.load(main.filename)">BED12</a> below, or choose an example.
+      <select class="form-control" ng-model="main.filename" ng-change="main.load(main.filename)">
+        <option value=""></option>
+        <option value="examples/bed6.bed">BED6</option>
+        <option value="examples/bed9.bed">BED9</option>
+        <option value="examples/bed12.bed">BED12</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <textarea class="form-control" rows="10" ng-model="main.bedText" placeholder="Paste data here"></textarea>
     </div>
     <div class="form-group">
       <button class="btn btn-primary" ng-click="main.process()">View</button>
