@@ -14,6 +14,11 @@ angular.module('angularBedViewApp')
   .controller('MainCtrl', function ($scope, dsv, $http) {
     var vm = this;
 
+    var _labelWidth = _F('labelWidth');
+    var _start = _F('chromStart');
+    var _end = _F('chromEnd');
+    var _chrom = _F('chrom');
+
     function getStringLength(s) {
       if(!s || s.length === 0) {return 0;}
       var svg = d3.select('body').append('svg');
@@ -24,7 +29,7 @@ angular.module('angularBedViewApp')
       return r;
     }
 
-    function processBed(d) {
+    function processBedRow(d) {
       d.chromStart = +d.chromStart;
       d.chromEnd = +d.chromEnd;
       d.itemRgb = d.itemRgb || '0,0,0';
@@ -56,18 +61,39 @@ angular.module('angularBedViewApp')
       return d;
     }
 
+    var yScale = $scope.yScale = function(i) { return 11*i; };
+
+    function draw(arr) {
+      vm.bedArray = d3.nest()
+        .key(_chrom)
+        .entries(arr);
+
+      vm.bedArray.forEach(function(track, i) {
+        track.start = d3.min(track.values, _start);
+        track.length = d3.max(track.values, _end)-track.start;
+        track.height = 40+yScale(track.values.length);
+        track.labelWidth = d3.max(track.values, _labelWidth);
+        track.labelWidth = Math.max(track.labelWidth, getStringLength(track.key || ''));
+        track.offset = i === 0 ? 0 : vm.bedArray[i-1].height + vm.bedArray[i-1].offset;
+      });
+
+      console.log(vm.bedArray[0].start, vm.bedArray[0].length);
+
+      vm.margin = {top: 30, right: 0, bottom: 0, left: d3.max(vm.bedArray, _labelWidth)};
+      vm.svgHeight = vm.bedArray[vm.bedArray.length-1].offset + vm.bedArray[vm.bedArray.length-1].height;
+      vm.trackWidth = 650-vm.margin.left-vm.margin.right;
+    }
+
     vm.load = function(file) {
       if (!file.length) { return; }
 
-      $http.get(file).success(function(data) {
+      var r = {method: 'get', url: file, cache: true};
+
+      dsv.tsv(r, processBedRow).success(draw);
+
+      $http(r).success(function(data) {
         vm.bedText = data;
-        vm.process();
       });
-
-      //dsv.tsv({method: 'get', url: file}, processBed).success(function(data) {
-      //  vm.bedArray = data;
-      //});
-
 
     };
 
@@ -81,29 +107,7 @@ angular.module('angularBedViewApp')
         text = header+text;
       }
 
-      vm.bedArray = dsv.tsv.parse(text, processBed);
-
-      var _labelWidth = _F('labelWidth');
-      var _start = _F('chromStart');
-      var _end = _F('chromEnd');
-      var _chrom = _F('chrom');
-
-      vm.bedArray = d3.nest()
-        .key(_chrom)
-        .entries(vm.bedArray);
-
-      vm.bedArray.forEach(function(d, i) {
-        d.start = d3.min(d.values, _start);
-        d.length = d3.max(d.values, _end)-d.start;
-        d.height = 40+10*d.values.length;
-        d.labelWidth = d3.max(d.values, _labelWidth);
-        d.labelWidth = Math.max(d.labelWidth, getStringLength(d.key || ''));
-        d.offset = i === 0 ? 0 : vm.bedArray[i-1].height + vm.bedArray[i-1].offset;
-      });
-
-      vm.margin = {top: 30, right: 0, bottom: 0, left: d3.max(vm.bedArray, _labelWidth)};
-      vm.svgHeight = vm.bedArray[vm.bedArray.length-1].offset + vm.bedArray[vm.bedArray.length-1].height;
-      vm.trackWidth = 650-vm.margin.left-vm.margin.right;
+      draw(dsv.tsv.parse(text, processBedRow));
 
     };
 

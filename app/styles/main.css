@@ -29,6 +29,7 @@ body {
   padding-top: 19px;
   color: #777;
   border-top: 1px solid #e5e5e5;
+  text-align: center;
 }
 
 /* Customize container */
@@ -78,6 +79,8 @@ body {
   }
 }
 
+/*  ---- */
+
 textarea {
   white-space: nowrap;
 }
@@ -88,6 +91,12 @@ svg .domain {
   fill: none;
   stroke: black;
   stroke-width: 2px;
+}
+
+svg .feature .domain {
+  fill: none;
+  stroke: black;
+  stroke-width: 1px;
 }
 
 svg .tick line {
