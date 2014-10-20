@@ -36,6 +36,9 @@ angular.module('angularBedViewApp')
       d.shape = 'box';
       d.blocks = [];
 
+      d.thickStart = d.thickStart || d.chromStart;
+      d.thickEnd = d.thickEnd || d.chromEnd;
+
       if (d.blockCount && d.blockCount > 0) {
         d.blockSizes = d.blockSizes.split(',');
         d.blockStarts = d.blockStarts.split(',');
@@ -51,7 +54,11 @@ angular.module('angularBedViewApp')
             });
           }
         }
-
+      } else {
+        d.blocks.push({
+          start: d.thickStart,
+          end: d.thickEnd
+        });
       }
 
       d.labelWidth = getStringLength(d.name);
