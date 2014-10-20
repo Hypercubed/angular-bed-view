@@ -1,19 +1,18 @@
 <div class="row">
-  <form role="form form-horizontal">
+  <form role="form form-horizontal" name="main.bedForm">
     <div class="form-group">
-      Insert text for <a href ng-click="main.filename = 'examples/bed6.bed'; main.load(main.filename)">BED6</a>, <a href ng-click="main.filename = 'examples/bed9.bed'; main.load(main.filename)">BED9</a>, or <a href ng-click="main.filename = 'examples/bed12.bed'; main.load(main.filename)">BED12</a> below, or choose an example.
-      <select class="form-control" ng-model="main.filename" ng-change="main.load(main.filename)">
-        <option value=""></option>
-        <option value="examples/bed6.bed">BED6</option>
-        <option value="examples/bed9.bed">BED9</option>
-        <option value="examples/bed12.bed">BED12</option>
-      </select>
+      Paste or drop your BED file below. Or select an example:
+      <a href ng-click="main.filename = 'examples/bed6.bed'; main.load(main.filename)">BED6</a>,
+      <a href ng-click="main.filename = 'examples/bed9.bed'; main.load(main.filename)">BED9</a>,
+      or <a href ng-click="main.filename = 'examples/bed12.bed'; main.load(main.filename)">BED12</a>.
     </div>
     <div class="form-group">
-      <textarea class="form-control" rows="10" ng-model="main.bedText" placeholder="Paste data here"></textarea>
+      <div name="bedText" rows="10"
+        ui-codemirror="{ lineNumbers : true, placeholder : 'Paste or drop your BED file here.'}"
+        ng-model="main.bedText" placeholder="Paste or drop your BED file here."></div>
     </div>
     <div class="form-group">
-      <button class="btn btn-primary" ng-click="main.process()">View</button>
+      <button class="btn btn-primary" ng-click="main.process()" ng-disabled="main.bedForm.$pristine">View</button>
     </div>
   </form>
 </div>

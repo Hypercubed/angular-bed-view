@@ -14,6 +14,8 @@ angular.module('angularBedViewApp')
   .controller('MainCtrl', function ($scope, dsv, $http) {
     var vm = this;
 
+    vm.bedText = null;
+
     var _labelWidth = _F('labelWidth');
     var _start = _F('chromStart');
     var _end = _F('chromEnd');
@@ -84,11 +86,14 @@ angular.module('angularBedViewApp')
         track.offset = i === 0 ? 0 : vm.bedArray[i-1].height + vm.bedArray[i-1].offset;
       });
 
-      console.log(vm.bedArray[0].start, vm.bedArray[0].length);
+      //console.log(vm.bedArray[0].start, vm.bedArray[0].length);
 
       vm.margin = {top: 30, right: 0, bottom: 0, left: d3.max(vm.bedArray, _labelWidth)};
       vm.svgHeight = vm.bedArray[vm.bedArray.length-1].offset + vm.bedArray[vm.bedArray.length-1].height;
       vm.trackWidth = 650-vm.margin.left-vm.margin.right;
+
+      vm.bedForm.$setPristine();
+
     }
 
     vm.load = function(file) {
@@ -106,16 +111,23 @@ angular.module('angularBedViewApp')
 
     var header = 'chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tblockCount\tblockSizes\tblockStarts\n';
 
-    vm.process = function() {
-      var text = vm.bedText;
-      text = text.replace(/ +/g, '\t');
+    vm.process = function(text) {
+      text = text || vm.bedText;
+      if (!text) { return; }
+
+      text = text.replace(/[ \t\xA0\u00A0\u2028\u2029]+/g, '\t');
 
       if (!text.match(/^chrom/)) {
         text = header+text;
       }
 
-      draw(dsv.tsv.parse(text, processBedRow));
+      var arr = dsv.tsv.parse(text, processBedRow);
+      draw(arr);
+    };
 
+    vm.onRead = function( e ){
+      vm.bedText = e.target.result;
+      vm.process();
     };
 
   });

@@ -85,6 +85,10 @@ textarea {
   white-space: nowrap;
 }
 
+.CodeMirror {
+  border: 1px solid #ddd;
+}
+
 /*  ---- */
 
 svg .domain {

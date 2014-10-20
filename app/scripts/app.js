@@ -9,4 +9,4 @@
  * Main module of the application.
  */
 angular
-  .module('angularBedViewApp', ['angularprimer','hc.downloader','hc.dsv']);
+  .module('angularBedViewApp', ['ui.codemirror','angularprimer','hc.downloader','hc.dsv']);

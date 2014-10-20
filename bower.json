@@ -9,7 +9,8 @@
     "angular-primer": "Hypercubed/angular-primer#~0.0.4",
     "angular-downloadsvg-directive": "~0.0.15",
     "angular-dsv": "~0.0.4",
-    "_F": "Hypercubed/_F#~0.0.5"
+    "_F": "Hypercubed/_F#~0.0.5",
+    "angular-ui-codemirror": "bower"
   },
   "devDependencies": {
     "angular-mocks": "~1.2.0",
@@ -23,6 +24,13 @@
     "copycss": {
       "main": [
         "jquery.copycss.js"
+      ]
+    },
+    "codemirror": {
+      "main": [
+        "lib/codemirror.js",
+        "addon/display/placeholder.js",
+        "lib/codemirror.css"
       ]
     }
   }
