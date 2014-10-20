@@ -7,9 +7,9 @@
       or <a href ng-click="main.filename = 'examples/bed12.bed'; main.load(main.filename)">BED12</a>.
     </div>
     <div class="form-group">
-      <div name="bedText" rows="10"
-        ui-codemirror="{ lineNumbers : true, placeholder : 'Paste or drop your BED file here.'}"
-        ng-model="main.bedText" placeholder="Paste or drop your BED file here."></div>
+      <textarea name="bedText" rows="10" placeholder="Paste or drop your BED file here."
+        ui-codemirror="{ lineNumbers : true }"
+        ng-model="main.bedText" ></textarea>
     </div>
     <div class="form-group">
       <button class="btn btn-primary" ng-click="main.process()" ng-disabled="main.bedForm.$pristine">View</button>

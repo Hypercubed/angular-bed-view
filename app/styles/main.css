@@ -89,6 +89,10 @@ textarea {
   border: 1px solid #ddd;
 }
 
+.CodeMirror pre.CodeMirror-placeholder {
+  color: #999;
+}
+
 /*  ---- */
 
 svg .domain {
