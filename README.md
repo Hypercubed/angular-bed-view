@@ -57,7 +57,6 @@ dsv.tsv({method: 'GET', url: '/someUrl'}, function(d) { return {key: d.key, valu
     });
 ```
 
-
 [Hypercubed/_F](https://github.com/Hypercubed/_F/) is simply global shortcut for composable d3 style accessors functions.  For example:
 
       | \_F                             | JS equivalent |

@@ -1,39 +1,26 @@
-/* global d3 */
-/* global _F */
-
 'use strict';
 
-/**
- * @ngdoc function
- * @name angularBedViewApp.controller:MainCtrl
- * @description
- * # MainCtrl
- * Controller of the angularBedViewApp
- */
 angular.module('angularBedViewApp')
-  .controller('MainCtrl', function ($scope, dsv, $http) {
+
+  .controller('MainCtrl', function ($scope, dsv, $http, $timeout, d3, svgUtil, _F) {
     var vm = this;
 
     vm.bedText = null;
+    vm.scale = 1.1;
 
     var _labelWidth = _F('labelWidth');
     var _start = _F('chromStart');
     var _end = _F('chromEnd');
     var _chrom = _F('chrom');
 
-    function getStringLength(s) {
-      if(!s || s.length === 0) {return 0;}
-      var svg = d3.select('body').append('svg');
-      var temp = svg.append('text');
-      temp.text(s);
-      var r = temp.node().getComputedTextLength();
-      svg.remove();
-      return r;
-    }
-
     function processBedRow(d) {
-      d.chromStart = +d.chromStart;
-      d.chromEnd = +d.chromEnd;
+
+      if (d.chrom.match(/^\#/)){ return; }
+
+      d.chromStart = parseInt(d.chromStart);
+      d.chromEnd = parseInt(d.chromEnd);
+      if (!d.chromStart || !d.chromEnd) { return; }
+
       d.itemRgb = d.itemRgb || '0,0,0';
       d.shape = 'box';
       d.blocks = [];
@@ -63,26 +50,35 @@ angular.module('angularBedViewApp')
         });
       }
 
-      d.labelWidth = getStringLength(d.name);
+      d.labelWidth = svgUtil.getStringLength(d.name);
       if (d.strand) {
         d.shape += (d.strand === '+') ? '-right' : '-left';
       }
       return d;
     }
 
-    var yScale = $scope.yScale = function(i) { return 11*i; };
+    var yScale = $scope._$y = function(i) { return 11*i; };
 
     function draw(arr) {
       vm.bedArray = d3.nest()
         .key(_chrom)
         .entries(arr);
 
+      var S = vm.scale;
       vm.bedArray.forEach(function(track, i) {
-        track.start = d3.min(track.values, _start);
-        track.length = d3.max(track.values, _end)-track.start;
+        var start = d3.min(track.values, _start);
+        var end = d3.max(track.values, _end);
+
+        var mid = (end + start)/2;
+
+        start = mid - S*(mid - start);
+        end = S*(end - mid) + mid;
+
+        track.start = start;
+        track.length = end-start;
         track.height = 40+yScale(track.values.length);
         track.labelWidth = d3.max(track.values, _labelWidth);
-        track.labelWidth = Math.max(track.labelWidth, getStringLength(track.key || ''));
+        track.labelWidth = Math.max(track.labelWidth, svgUtil.getStringLength(track.key || ''));
         track.offset = i === 0 ? 0 : vm.bedArray[i-1].height + vm.bedArray[i-1].offset;
       });
 
@@ -103,10 +99,9 @@ angular.module('angularBedViewApp')
 
       dsv.tsv(r, processBedRow).success(draw);
 
-      $http(r).success(function(data) {
+      $http(r).success(function(data) {  // Also add a copy of teh plain text to the textarea
         vm.bedText = data;
       });
-
     };
 
     var header = 'chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tblockCount\tblockSizes\tblockStarts\n';
@@ -130,4 +125,27 @@ angular.module('angularBedViewApp')
       vm.process();
     };
 
+    vm.onDrag = function(track, e, x) {
+      var scale = x.invert;
+      track.start -= scale(e.dx)-scale(0);
+    }
+
+  })
+
+  .directive('d3Drag', function($parse, d3){
+    return{
+      require: 'primerTrack',
+      compile: function($element, attr) {
+        var fn = $parse(attr.d3Drag);
+        return function(scope, element, attr, track) {
+          var e = d3.select(element[0]);
+          var drag = d3.behavior.drag().on('drag', function() {
+            scope.$apply(function() {
+              fn(scope, {$event:d3.event, _$x:track.xScale});
+            })
+          });
+          e.call(drag);
+        };
+      }
+    }
   });
