@@ -20,7 +20,12 @@
 <div class="row well" ng-show="main.bedArray.length">
   <svg id="chart" width="100%" ng-attr-height="{{main.svgHeight}}px">
     <g ng-repeat="track in main.bedArray track by $index" ng-attr-transform="translate({{main.margin.left}},{{main.margin.top+track.offset}})">
-      <g primer-track class="track" start="track.start" d3-drag="main.onDrag(track, $event, _$x, _$y)" sequence-length="track.length" width="main.trackWidth" height="_$y(1)">
+      <g primer-track class="track" start="track.start"
+          d3-drag="main.onDrag(track, $event, _$x, _$y)"
+          d3-zoom="main.onZoom(track, $event, _$x, _$y)"
+          sequence-length="track.length"
+          width="main.trackWidth"
+          height="_$y(1)">
         <rect opacity="0" ng-attr-width="{{main.trackWidth}}" x="25" y="-20" ng-attr-height="{{track.height}}">
         </rect>
         <g primer-scale orient="top" ></g>

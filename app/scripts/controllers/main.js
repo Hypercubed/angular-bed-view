@@ -64,8 +64,9 @@ angular.module('angularBedViewApp')
         .key(_chrom)
         .entries(arr);
 
-      var S = vm.scale;
       vm.bedArray.forEach(function(track, i) {
+        var S = 1;
+
         var start = d3.min(track.values, _start);
         var end = d3.max(track.values, _end);
 
@@ -80,6 +81,8 @@ angular.module('angularBedViewApp')
         track.labelWidth = d3.max(track.values, _labelWidth);
         track.labelWidth = Math.max(track.labelWidth, svgUtil.getStringLength(track.key || ''));
         track.offset = i === 0 ? 0 : vm.bedArray[i-1].height + vm.bedArray[i-1].offset;
+
+        track.scale = null;
       });
 
       //console.log(vm.bedArray[0].start, vm.bedArray[0].length);
@@ -127,9 +130,41 @@ angular.module('angularBedViewApp')
 
     vm.onDrag = function(track, e, x) {
       var scale = x.invert;
-      track.start -= scale(e.dx)-scale(0);
-    }
+      var dx = scale(e.dx)-scale(0);
+      track.start = Math.max(0, track.start-dx);
+    };
 
+    vm.onZoom = function(track, e, x) {
+
+      //console.log(e.translate);
+
+      if (track.scale) {
+        var s = track.scale/e.scale;
+
+        track.length *= s;
+        var dx = (1-s)*track.length/2;
+        track.start = Math.max(0, track.start+dx);
+      }
+
+      track.scale = e.scale;
+    };
+
+  })
+
+  .directive('d3Zoom', function($parse, d3){
+    return{
+      require: 'primerTrack',
+      compile: function($element, attr) {
+        var fn = $parse(attr.d3Zoom);
+        return function(scope, element, attr, track) {
+          d3.select(element[0]).call(d3.behavior.zoom().on('zoom', function() {
+            scope.$apply(function() {
+              fn(scope, {$event:d3.event, _$x:track.xScale});
+            });
+          }));
+        };
+      }
+    };
   })
 
   .directive('d3Drag', function($parse, d3){
@@ -142,10 +177,10 @@ angular.module('angularBedViewApp')
           var drag = d3.behavior.drag().on('drag', function() {
             scope.$apply(function() {
               fn(scope, {$event:d3.event, _$x:track.xScale});
-            })
+            });
           });
           e.call(drag);
         };
       }
-    }
+    };
   });
