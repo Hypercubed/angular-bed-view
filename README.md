@@ -59,11 +59,11 @@ dsv.tsv({method: 'GET', url: '/someUrl'}, function(d) { return {key: d.key, valu
 
 [Hypercubed/_F](https://github.com/Hypercubed/_F/) is simply global shortcut for composable d3 style accessors functions.  For example:
 
-      | \_F                             | JS equivalent |
-      | ------------------------------ | ------------- |
-      | \_F('prop')                     | function(d) { return d.prop; } |
-      | \_F('prop').eq(value)           | function(d) { return d.prop === value; } |
-      | \_F('prop').gt(10).and().lt(20) | function(d) { return d.prop > 10 && d.prop < 20; } |
+| _F                               | JS equivalent                                        |
+| -------------------------------- | ---------------------------------------------------- |
+| `_F('prop')`                     | `function(d) { return d.prop; }`                     |
+| `_F('prop').eq(value)`           | `function(d) { return d.prop === value; }`           |
+| `_F('prop').gt(10).and().lt(20)` | `function(d) { return d.prop > 10 && d.prop < 20; }` |
 
 ## Acknowledgments
 This work was supported by a research grant from the Japanese Ministry of Education, Culture, Sports, Science and Technology (MEXT) to the RIKEN Center for Life Science Technologies.
